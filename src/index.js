@@ -1,13 +1,22 @@
-import StripeAddCard1 from './components/stripeAddCard'
-import AddCard1 from './components/addCard'
-import SelectPayment1 from './components/selectPayment'
-import selectPaymentDefaultStyles1 from './components/selectPayment/defaultStyles'
-import addCardDefaultStyles1 from './components/addCard/defaultStyles'
-import CardBrandImage1 from './components/paymentMethods/cardBrandImage'
+import StripeAddCard from './components/stripeAddCard'
+import AddCard from './components/addCard'
+import SelectPayment from './components/selectPayment'
+import selectPaymentDefaultStyles from './components/selectPayment/defaultStyles'
+import addCardDefaultStyles from './components/addCard/defaultStyles'
+import CardBrandImage from './components/paymentMethods/cardBrandImage'
+import ScanCard from './components/scanCard'
+import cardFormatting from '../common/cardFormatting'
+import stripe from '../common/stripe'
 
-export const StripeAddCard = StripeAddCard1
-export const AddCard = AddCard1
-export const SelectPayment = SelectPayment1
-export const selectPaymentDefaultStyles = selectPaymentDefaultStyles1
-export const addCardDefaultStyles = addCardDefaultStyles1
-export const CardBrandImage = CardBrandImage1
+
+export { 
+         StripeAddCard,
+         AddCard,
+         SelectPayment,
+         selectPaymentDefaultStyles,
+         addCardDefaultStyles,
+         CardBrandImage,
+         ScanCard,
+         cardFormatting,
+         stripe
+        }

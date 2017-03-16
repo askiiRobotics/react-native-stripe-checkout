@@ -53,13 +53,22 @@ export default ({
     ...cardImage
   },
   cardNumberContainer: {
-    ...cardFieldContainer
+    flexDirection: 'column',
+    flex: 0,
+    height: 205,
+    backgroundColor: 'transparent',
+    alignItems: 'flex-start',
+    borderColor: '#C8C7CC',
+    borderBottomWidth: 1,
   },
   cardNumberImage: {
-    ...cardImage
+    height: 100,
+    marginBottom: 20,
+    marginTop: 30,
   },
   cardNumberInput: {
     ...textInput,
+    paddingLeft: 17,
   },
   cvcContainer: {
     ...cardFieldContainer,
@@ -84,8 +93,9 @@ export default ({
   },
   innerTouchableOpacityContainer: innerTouchableOpacityContainer,
   invalid: {
-    borderWidth: StyleSheet.hairlineWidth,
     borderColor: red,
+    borderBottomWidth: StyleSheet.hairlineWidth, 
+    borderWidth: 0,
   },
   monthYearContainer: {
     ...cardFieldContainer,

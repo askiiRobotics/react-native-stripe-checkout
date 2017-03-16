@@ -8,7 +8,7 @@ import s from 'string'
 import payment from 'payment'
 import { CardIOModule, CardIOUtilities } from 'react-native-awesome-card-io'
 import ScanCard from '../scanCard'
-import KeyboardSpacer from 'react-native-keyboard-spacer'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const DELAY_FOCUS = Platform.OS === 'android' ? 200 : 0
 export default class AddCard extends Component {
@@ -92,18 +92,23 @@ export default class AddCard extends Component {
     const calculatedState = this.calculatedState()
     if (calculatedState.addingCard) {
       return (
-        <View style={styles.activityIndicatorContainer}>
+        <KeyboardAwareScrollView style={[{ flex: 1 }, styles.activityIndicatorContainer]}>
           <ActivityIndicator color={this.props.activityIndicatorColor} size="large" style={styles.activityIndicator} />
-        </View>
+        </KeyboardAwareScrollView>
       )
     }
     if (calculatedState.scanningCard) {
-      return <ScanCard scanCardGuideColor={this.props.scanCardGuideColor} didScanCard={(card) => this.didScanCard(card)} />
+      return (<KeyboardAwareScrollView style={{ flex: 1 }}>
+                <ScanCard scanCardGuideColor={this.props.scanCardGuideColor} didScanCard={(card) => this.didScanCard(card)} />
+              </KeyboardAwareScrollView>);
     }
     const addCardContents = (
       <View>
         <View style={[styles.cardNumberContainer, calculatedState.cardNumberShowError && styles.invalid]}>
-          <Image resizeMode="contain" style={styles.cardNumberImage} source={require('../../../assets/images/card_front.png')} />
+          <Image resizeMode="contain" 
+                 style={styles.cardNumberImage} 
+                 source={this.props.image ? this.props.image : require('../../../assets/images/card_front.png')} 
+                 />
           <TextInput
             ref="cardNumberInput"
             keyboardType="numeric"
@@ -117,7 +122,7 @@ export default class AddCard extends Component {
               }
             }}
             value={calculatedState.cardNumberFormatted}
-            placeholder="4242 4242 4242 4242"
+            placeholder="1234 5678 9012 3456"
             onFocus={() => this.props.onCardNumberFocus && this.props.onCardNumberFocus(calculatedState.cardNumber)}
             onBlur={() => {
               if (this.props.onCardNumberBlur) {
@@ -239,12 +244,11 @@ export default class AddCard extends Component {
       </View>
     )
     return (
-      <View style={{ flex: 1 }}>
+      <KeyboardAwareScrollView style={{ flex: 1 }}>
         <View style={[styles.addCardContainer, this.props.style]}>
           {addCardContents}
         </View>
-        {Platform.OS === 'android' ? null : <KeyboardSpacer /> /* Android takes care of this for us. */}
-      </View>
+      </KeyboardAwareScrollView>
     )
   }
 }
