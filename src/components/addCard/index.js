@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ActivityIndicator, Platform, View, Image, TextInput, Text } from 'react-native'
+import ReactNative, { ActivityIndicator, Platform, View, Image, TextInput, Text } from 'react-native'
 import defaultStyles from './defaultStyles.js'
 import TouchableOpacity from '../common/touchableOpacity'
 import { formatMonthYearExpiry } from '../../common/cardFormatting'
@@ -137,7 +137,7 @@ export default class AddCard extends Component {
                 caption={this.props.addCardButtonText || 'Add Card'}
                 />);
     }
-
+    let self = this;
     const addCardContents = (
       <View>
         <View style={[styles.cardNumberContainer, calculatedState.cardNumberShowError && styles.invalid]}>
@@ -159,7 +159,10 @@ export default class AddCard extends Component {
             }}
             value={calculatedState.cardNumberFormatted}
             placeholder="1234 1234 1234 1234"
-            onFocus={() => this.props.onCardNumberFocus && this.props.onCardNumberFocus(calculatedState.cardNumber)}
+            onFocus={(event) => {
+              this.refs.scroll.scrollToFocusedInput(ReactNative.findNodeHandle(event.target));
+              return this.props.onCardNumberFocus && this.props.onCardNumberFocus(calculatedState.cardNumber)}
+              }
             onBlur={() => {
               if (this.props.onCardNumberBlur) {
                 this.props.onCardNumberBlur(calculatedState.cardNumber)
@@ -268,7 +271,7 @@ export default class AddCard extends Component {
       </View>
     )
     return (
-      <KeyboardAwareScrollView style={{ flex: 1 }}>
+      <KeyboardAwareScrollView ref='scroll' style={{ flex: 1 }}>
         <View style={[styles.addCardContainer, this.props.style]}>
           {addCardContents}
         </View>
