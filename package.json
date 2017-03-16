@@ -1,5 +1,5 @@
 {
-  "name": "react-native-payment-cards",
+  "name": "react-native-stripe-checkout",
   "version": "0.0.11",
   "private": false,
   "main": "src/index.js",
