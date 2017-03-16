@@ -5,8 +5,8 @@ import selectPaymentDefaultStyles from './components/selectPayment/defaultStyles
 import addCardDefaultStyles from './components/addCard/defaultStyles'
 import CardBrandImage from './components/paymentMethods/cardBrandImage'
 import ScanCard from './components/scanCard'
-import cardFormatting from '../common/cardFormatting'
-import stripe from '../common/stripe'
+import cardFormatting from './common/cardFormatting'
+import stripe from './common/stripe'
 
 
 export { 
