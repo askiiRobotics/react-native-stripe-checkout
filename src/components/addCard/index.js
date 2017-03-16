@@ -123,7 +123,7 @@ export default class AddCard extends Component {
               }
             }}
             value={calculatedState.cardNumberFormatted}
-            placeholder="1234 5678 9012 3456"
+            placeholder="1234 1234 1234 1234"
             onFocus={() => this.props.onCardNumberFocus && this.props.onCardNumberFocus(calculatedState.cardNumber)}
             onBlur={() => {
               if (this.props.onCardNumberBlur) {
