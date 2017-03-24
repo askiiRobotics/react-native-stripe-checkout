@@ -93,7 +93,7 @@ export default class AddCard extends Component {
     const calculatedState = this.calculatedState()
     if (calculatedState.addingCard) {
       return (
-        <KeyboardAwareScrollView style={[{ flex: 1 }, styles.activityIndicatorContainer]}>
+        <KeyboardAwareScrollView style={{flex: 1}} contentContainerStyle={styles.activityIndicatorContainer}>
           <ActivityIndicator color={this.props.activityIndicatorColor} size="large" style={styles.activityIndicator} />
         </KeyboardAwareScrollView>
       )
