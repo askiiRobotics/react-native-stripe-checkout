@@ -160,7 +160,7 @@ export default class AddCard extends Component {
             value={calculatedState.cardNumberFormatted}
             placeholder="1234 1234 1234 1234"
             onFocus={(event) => {
-              this.refs.scroll.scrollToPosition(100, 0, true);
+              this.refs.scroll.scrollToPosition(0, 100, true);
               return this.props.onCardNumberFocus && this.props.onCardNumberFocus(calculatedState.cardNumber)}
               }
             onBlur={() => {
