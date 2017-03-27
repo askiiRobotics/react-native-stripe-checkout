@@ -26,6 +26,7 @@ export default class AddCard extends Component {
       disableScan: false,
     }
   }
+    _isMounted;
 
   componentWillMount() {
     if (CardIOUtilities.preload) {
@@ -34,10 +35,18 @@ export default class AddCard extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.refs.cardNumberInput.focus()
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   didScanCard(card) {
+    if(!this._isMounted) {
+      return;
+    }
     this.setState({
       scanningCard: false,
       hasTriedScan: true,
@@ -110,12 +119,12 @@ export default class AddCard extends Component {
           style={styles.addButton}
           styles={styles}
           onPress={() => {
-            this.setState({ expiryDirty: true, cardNumberDirty: true, cvcDirty: true })
+            this._isMounted && this.setState({ expiryDirty: true, cardNumberDirty: true, cvcDirty: true })
             if (this.isCardNumberValid() && this.isExpiryValid() && this.isCvcValid()) {
-              this.setState({ addingCard: true })
+              this._isMounted && this.setState({ addingCard: true })
               this.props.addCardHandler(calculatedState.cardNumber, calculatedState.expiry, calculatedState.cvc)
-                .then(() => this.setState({ addingCard: false }))
-                .catch((error) => this.setState({ error: error.message, addingCard: false }))
+                .then(() => this._isMounted && this.setState({ addingCard: false }))
+                .catch((error) => this._isMounted && this.setState({ error: error.message, addingCard: false }))
             }
           }}
           last
@@ -126,12 +135,12 @@ export default class AddCard extends Component {
       payBtn = (<PayBtn 
                 {...this.props.payBtnProps}
                 onPress={() => {
-                  this.setState({ expiryDirty: true, cardNumberDirty: true, cvcDirty: true })
+                  this._isMounted && this.setState({ expiryDirty: true, cardNumberDirty: true, cvcDirty: true })
                   if (this.isCardNumberValid() && this.isExpiryValid() && this.isCvcValid()) {
-                    this.setState({ addingCard: true })
+                    this._isMounted && this.setState({ addingCard: true })
                     this.props.addCardHandler(calculatedState.cardNumber, calculatedState.expiry, calculatedState.cvc)
-                      .then(() => this.setState({ addingCard: false }))
-                      .catch((error) => this.setState({ error: error.message, addingCard: false }))
+                      .then(() => this._isMounted && this.setState({ addingCard: false }))
+                      .catch((error) => this._isMounted && this.setState({ error: error.message, addingCard: false }))
                   }
                 }}
                 caption={this.props.addCardButtonText || 'Add Card'}
@@ -152,7 +161,7 @@ export default class AddCard extends Component {
             style={styles.cardNumberInput}
             onChangeText={(rawCardNumber) => {
               const cardNumber = s(rawCardNumber).replaceAll(' ', '').s
-              this.setState({ cardNumber: cardNumber })
+              this._isMounted && this.setState({ cardNumber: cardNumber })
               if (payment.fns.validateCardNumber(cardNumber)) {
                 this.refs.expiryInput.focus()
               }
@@ -167,7 +176,7 @@ export default class AddCard extends Component {
               if (this.props.onCardNumberBlur) {
                 this.props.onCardNumberBlur(calculatedState.cardNumber)
               }
-              this.setState({ cardNumberDirty: true })
+              this._isMounted && this.setState({ cardNumberDirty: true })
             }}
           />
         </View>
@@ -182,12 +191,12 @@ export default class AddCard extends Component {
               style={styles.monthYearTextInput}
               onChangeText={(expiry) => {
                 const newExpiry = formatMonthYearExpiry(expiry, calculatedState.expiry)
-                this.setState({ expiry: newExpiry })
+                this._isMounted && this.setState({ expiry: newExpiry })
                 if (_.size(newExpiry) === 5) {
                   if (payment.fns.validateCardExpiry(newExpiry)) {
                     this.refs.cvcInput.focus()
                   } else {
-                    this.setState({ expiryDirty: true })
+                    this._isMounted && this.setState({ expiryDirty: true })
                   }
                 }
               }}
@@ -195,7 +204,7 @@ export default class AddCard extends Component {
               placeholder="MM/YY"
               onFocus={() => this.props.onExpiryFocus && this.props.onExpiryFocus(calculatedState.expiry)}
               onBlur={() => {
-                this.setState({ expiryDirty: true })
+                this._isMounted && this.setState({ expiryDirty: true })
                 if (this.props.onExpiryBlur) {
                   this.props.onExpiryBlur(calculatedState.expiry)
                 }
@@ -209,12 +218,12 @@ export default class AddCard extends Component {
               keyboardType="numeric"
               underlineColorAndroid="transparent"
               style={styles.cvcInput}
-              onChangeText={(cvc) => this.setState({ cvc })}
+              onChangeText={(cvc) => this._isMounted && this.setState({ cvc })}
               value={calculatedState.cvc}
               placeholder="CVC"
               onFocus={() => this.props.onCvcFocus && this.props.onCvcFocus(calculatedState.cvc)}
               onBlur={() => {
-                this.setState({ cvcDirty: true })
+                this._isMounted && this.setState({ cvcDirty: true })
                 if (this.props.onCvcBlur) {
                   this.props.onCvcBlur(calculatedState.cvc)
                 }
@@ -257,7 +266,7 @@ export default class AddCard extends Component {
                     _.delay(() => refToFocus.focus(), DELAY_FOCUS)
                   })
               } else {
-                this.setState({ scanningCard: true })
+                this._isMounted && this.setState({ scanningCard: true })
               }
             }}
             last
