@@ -6,12 +6,40 @@ import { formatMonthYearExpiry } from '../../common/cardFormatting'
 import _ from 'lodash'
 import s from 'string'
 import payment from 'payment'
+import KeyboardSpacer from 'react-native-keyboard-spacer'
 import { CardIOModule, CardIOUtilities } from 'react-native-awesome-card-io'
 import ScanCard from '../scanCard'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import cardFront from '../../../assets/images/card_front.png'
+import cardExpiry from '../../../assets/images/card_expiry.png'
+import cardCvc from '../../../assets/images/card_cvc.png'
 
 const DELAY_FOCUS = Platform.OS === 'android' ? 200 : 0
 export default class AddCard extends Component {
+  static propTypes = {
+    addCardHandler: React.PropTypes.func.isRequired,
+    onCardNumberBlur: React.PropTypes.func,
+    onCardNumberFocus: React.PropTypes.func,
+    onCvcFocus: React.PropTypes.func,
+    onCvcBlur: React.PropTypes.func,
+    onExpiryBlur: React.PropTypes.func,
+    onExpiryFocus: React.PropTypes.func,
+    onScanCardClose: React.PropTypes.func,
+    onScanCardOpen: React.PropTypes.func,
+    styles: React.PropTypes.object,
+    activityIndicatorColor: React.PropTypes.string,
+    scanCardButtonText: React.PropTypes.string,
+    scanCardAfterScanButtonText: React.PropTypes.string,
+    addCardButtonText: React.PropTypes.string,
+  }
+
+  static defaultProps = {
+    activityIndicatorColor: 'black',
+    addCardButtonText: 'Add Card',
+    scanCardAfterScanButtonText: 'Scan Again',
+    scanCardButtonText: 'Scan Card',
+  }
+
   constructor(props) {
     super(props)
     this.state = {
@@ -119,28 +147,28 @@ export default class AddCard extends Component {
           style={styles.addButton}
           styles={styles}
           onPress={() => {
-            this._isMounted && this.setState({ expiryDirty: true, cardNumberDirty: true, cvcDirty: true })
+            this.setState({ expiryDirty: true, cardNumberDirty: true, cvcDirty: true })
             if (this.isCardNumberValid() && this.isExpiryValid() && this.isCvcValid()) {
-              this._isMounted && this.setState({ addingCard: true })
+              this.setState({ addingCard: true })
               this.props.addCardHandler(calculatedState.cardNumber, calculatedState.expiry, calculatedState.cvc)
-                .then(() => this._isMounted && this.setState({ addingCard: false }))
-                .catch((error) => this._isMounted && this.setState({ error: error.message, addingCard: false }))
+                .then(() => this.setState({ addingCard: false }))
+                .catch((error) => this.setState({ error: error.message, addingCard: false }))
             }
           }}
           last
         >
-          <Text style={styles.addButtonText}>{this.props.addCardButtonText || 'Add Card'}</Text>
-    </TouchableOpacity>);
+          <Text style={styles.addButtonText}>{this.props.addCardButtonText}</Text>
+        </TouchableOpacity>);
   } else {
       payBtn = (<PayBtn 
                 {...this.props.payBtnProps}
                 onPress={() => {
-                  this._isMounted && this.setState({ expiryDirty: true, cardNumberDirty: true, cvcDirty: true })
+                  this.setState({ expiryDirty: true, cardNumberDirty: true, cvcDirty: true })
                   if (this.isCardNumberValid() && this.isExpiryValid() && this.isCvcValid()) {
-                    this._isMounted && this.setState({ addingCard: true })
+                    this.setState({ addingCard: true })
                     this.props.addCardHandler(calculatedState.cardNumber, calculatedState.expiry, calculatedState.cvc)
-                      .then(() => this._isMounted && this.setState({ addingCard: false }))
-                      .catch((error) => this._isMounted && this.setState({ error: error.message, addingCard: false }))
+                      .then(() => this.setState({ addingCard: false }))
+                      .catch((error) => this.setState({ error: error.message, addingCard: false }))
                   }
                 }}
                 caption={this.props.addCardButtonText || 'Add Card'}
@@ -152,7 +180,7 @@ export default class AddCard extends Component {
         <View style={[styles.cardNumberContainer, calculatedState.cardNumberShowError && styles.invalid]}>
           <Image resizeMode="contain" 
                  style={styles.cardNumberImage} 
-                 source={this.props.image ? this.props.image : require('../../../assets/images/card_front.png')} 
+                 source={this.props.image ? this.props.image : cardFront} 
                  />
           <TextInput
             ref="cardNumberInput"
@@ -182,7 +210,7 @@ export default class AddCard extends Component {
         </View>
         <View style={styles.monthYearCvcContainer}>
           <View style={[styles.monthYearContainer, calculatedState.expiryShowError && styles.invalid]}>
-            <Image resizeMode="contain" style={styles.cardExpiryImage} source={require('../../../assets/images/card_expiry.png')} />
+            <Image resizeMode="contain" style={styles.cardExpiryImage} source={cardExpiry} />
             <TextInput
               ref="expiryInput"
               maxLength={5}
@@ -212,7 +240,7 @@ export default class AddCard extends Component {
             />
           </View>
           <View style={[styles.cvcContainer, calculatedState.cvcShowError && styles.invalid]}>
-            <Image resizeMode="contain" style={styles.cvcImage} source={require('../../../assets/images/card_cvc.png')} />
+            <Image resizeMode="contain" style={styles.cvcImage} source={cardCvc} />
             <TextInput
               ref="cvcInput"
               keyboardType="numeric"
@@ -236,45 +264,45 @@ export default class AddCard extends Component {
         </View>
         {
           this.props.disableScan? null :
-          <TouchableOpacity
-            style={styles.scanCardButton}
-            styles={styles}
-            onPress={() => {
-              if (this.props.onScanCardOpen) {
-                this.props.onScanCardOpen()
-              }
-              if (Platform.OS === 'android') {
-                CardIOModule.
-                  scanCard({
-                    // guideColor: this.props.scanCardGuideColor, // This isn't working at the moment.
-                    hideCardIOLogo: true,
-                    suppressManualEntry: true,
-                    suppressConfirmation: true,
-                  })
-                  .then((card) => this.didScanCard(card))
-                  .catch(() => {
-                    let refToFocus
-                    if (!calculatedState.cardNumber) {
-                      refToFocus = this.refs.cardNumberInput
-                    } else if (!calculatedState.expiry) {
-                      refToFocus = this.refs.expiryInput
-                    } else {
-                      refToFocus = this.refs.cvcInput
-                    }
-                    // Make sure keyboard stays open on android.
-                    _.delay(() => refToFocus.blur(), DELAY_FOCUS / 2)
-                    _.delay(() => refToFocus.focus(), DELAY_FOCUS)
-                  })
-              } else {
-                this._isMounted && this.setState({ scanningCard: true })
-              }
-            }}
-            last
-          >
-            <Text style={styles.scanCardButtonText}>
-              {calculatedState.hasTriedScan ? this.props.scanCardAfterScanButtonText || 'Scan Again' : this.props.scanCardButtonText || 'Scan Card'}
-            </Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.scanCardButton}
+          styles={styles}
+          onPress={() => {
+            if (this.props.onScanCardOpen) {
+              this.props.onScanCardOpen()
+            }
+            if (Platform.OS === 'android') {
+              CardIOModule
+                .scanCard({
+                  // guideColor: this.props.scanCardGuideColor, // This isn't working at the moment.
+                  hideCardIOLogo: true,
+                  suppressManualEntry: true,
+                  suppressConfirmation: true,
+                })
+                .then((card) => this.didScanCard(card))
+                .catch(() => {
+                  let refToFocus
+                  if (!calculatedState.cardNumber) {
+                    refToFocus = this.refs.cardNumberInput
+                  } else if (!calculatedState.expiry) {
+                    refToFocus = this.refs.expiryInput
+                  } else {
+                    refToFocus = this.refs.cvcInput
+                  }
+                  // Make sure keyboard stays open on android.
+                  _.delay(() => refToFocus.blur(), DELAY_FOCUS / 2)
+                  _.delay(() => refToFocus.focus(), DELAY_FOCUS)
+                })
+            } else {
+              this.setState({ scanningCard: true })
+            }
+          }}
+          last
+        >
+          <Text style={styles.scanCardButtonText}>
+            {calculatedState.hasTriedScan ? this.props.scanCardAfterScanButtonText : this.props.scanCardButtonText}
+          </Text>
+        </TouchableOpacity>
         }
         {payBtn}
       </View>

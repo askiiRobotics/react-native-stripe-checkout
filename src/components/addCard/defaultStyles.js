@@ -17,7 +17,6 @@ const cardImage = {
 const cardFieldContainer = {
   flexDirection: 'row',
   alignItems: 'center',
-  flex: 1,
   backgroundColor: 'white',
 }
 const button = {
@@ -74,6 +73,7 @@ export default ({
     ...cardFieldContainer,
     borderLeftWidth: StyleSheet.hairlineWidth,
     borderLeftColor: grey,
+    flex: 1,
   },
   cvcImage: {
     ...cardImage
@@ -102,6 +102,7 @@ export default ({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: grey,
+    flex: 1,
   },
   monthYearCvcContainer: {
     flexDirection: 'row',
